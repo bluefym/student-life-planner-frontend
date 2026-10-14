@@ -47,22 +47,26 @@ export default function AuthPage({ onAuthenticated }) {
         user: data.user,
       });
     } catch (err) {
-      const status = err.response?.status;
-      const body = err.response?.data;
+  console.error("Authentication request failed:", err);
+  console.error("Request URL:", err.config?.baseURL, err.config?.url);
+  console.error("Response:", err.response);
 
-      setError(
-        body?.message ||
-          body?.detail ||
-          body?.error ||
-          (status === 401
-            ? "Email or password is incorrect."
-            : status === 409
-              ? "An account with this email already exists."
-              : "Unable to connect. Check that the backend is running on port 6500.")
-      );
-    } finally {
-      setLoading(false);
-    }
+  const status = err.response?.status;
+  const body = err.response?.data;
+
+  setError(
+    body?.message ||
+      body?.detail ||
+      body?.error ||
+      (status === 401
+        ? "Email or password is incorrect."
+        : status === 409
+          ? "An account with this email already exists."
+          : status
+            ? `Request failed with status ${status}.`
+            : `Connection failed: ${err.message}. Check the browser console.`)
+  );
+}
   }
 
   return (
